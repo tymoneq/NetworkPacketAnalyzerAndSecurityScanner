@@ -1,0 +1,15 @@
+.git
+.gitignore
+README.md
+.vscode
+node_modules
+__pycache__
+*.pyc
+.pytest_cache
+build/
+dist/
+*.egg-info
+.coverage
+.env
+logs/*
+data/*

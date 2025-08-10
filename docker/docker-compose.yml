@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: packet_analyzer
+    privileged: true  # Required for packet capture
+    network_mode: host  # Required for network monitoring
+    volumes:
+      - ./app:/app/app
+      - ./logs:/app/logs
+      - ./data:/app/data
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/packet_analyzer
+    depends_on:
+      - db
+    ports:
+      - "5000:5000"
+      - "8000:8000"
+      - "3000:3000"
+
+  db:
+    image: postgres:15
+    container_name: packet_analyzer_db
+    environment:
+      POSTGRES_DB: packet_analyzer
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./app/database:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:

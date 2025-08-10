@@ -1,0 +1,6 @@
+{
+    "cmake.sourceDirectory": "/home/tymon/coding/NetworkPacketAnalyzerAndSecurityScanner/app/backend/cpp_packet_capture",
+    "files.associations": {
+        "iostream": "cpp"
+    }
+}
