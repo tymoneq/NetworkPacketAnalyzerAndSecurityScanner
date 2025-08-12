@@ -4,3 +4,4 @@
 *.dll
 *.exe
 /app/backend/cpp_packet_capture/build
+/build
