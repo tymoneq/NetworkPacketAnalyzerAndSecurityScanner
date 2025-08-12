@@ -1,0 +1,6 @@
+*.o
+*.so
+*.a
+*.dll
+*.exe
+/app/backend/cpp_packet_capture/build

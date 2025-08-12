@@ -1,0 +1,9 @@
+[2025-08-12 08:17:06.338] [rotating_logger] [info] Starting program
+[2025-08-12 08:32:21.958] [rotating_logger] [info] Starting packet capture program
+[2025-08-12 08:38:50.581] [rotating_logger] [info] Starting packet capture program
+[2025-08-12 08:38:50.582] [rotating_logger] [info] Successfully found devices
+[2025-08-12 08:38:50.582] [rotating_logger] [info] Creating PacketCapture class
+[2025-08-12 08:38:50.593] [rotating_logger] [info] Successfully opend device
+[2025-08-12 08:38:50.593] [rotating_logger] [info] Successfully compiled filters
+[2025-08-12 08:38:50.593] [rotating_logger] [info] Successfully applied filters
+[2025-08-12 08:38:50.593] [rotating_logger] [info] Starting capturing packages

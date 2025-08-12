@@ -1,37 +1,32 @@
 #include <iostream>
-#include <pcap.h>
+#include <fstream>
+#include <string>
+#include "include/packetCapture.h"
+#include "include/logger.h"
 
 using namespace std;
 
-void packet_handler(u_char *user, const struct pcap_pkthdr *header, const u_char *packet)
-{
-
-    cout << "Captured packet of length " << header->len << " bytes\n";
-
-    for (int i = 0; i < header->len; i++)
-        printf("%02x ", packet[i]);
-
-    cout << "\n\n";
-}
-
 int main()
 {
+    // Initialize logging
+
+    writeToLog(info, "Starting packet capture program");
 
     char errbuf[PCAP_ERRBUF_SIZE];
+    pcap_if_t *alldevices;
 
-    pcap_t *handle;
-
-    handle = pcap_open_live("any", BUFSIZ, 1, 1000, errbuf);
-
-    if (handle == NULL)
+    if (pcap_findalldevs(&alldevices, errbuf) == -1)
     {
-        cerr << "Couldn't open device\n";
+        writeToLog(error, "Could not find any device");
         return -1;
     }
 
-    pcap_loop(handle, -1, packet_handler, NULL);
+    writeToLog(info, "Successfully found devices");
 
-    pcap_close(handle);
+    PacketCapturer packetCapture(alldevices->name);
+
+    writeToLog(info, "Closing packet capture program");
+    pcap_freealldevs(alldevices);
 
     return 0;
 }
