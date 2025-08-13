@@ -17,6 +17,7 @@ enum MessagesTypes
     error,
     trace,
     debug
+    
 
 };
 

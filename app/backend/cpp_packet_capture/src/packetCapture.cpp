@@ -1,6 +1,7 @@
 #include "../include/packetCapture.h"
 #include <string>
 #include "../include/logger.h"
+#include "../include/packetParsing.h"
 
 using namespace std;
 
@@ -76,4 +77,5 @@ void PacketCapturer::capturePackets()
 void PacketCapturer::packetHandler(const struct pcap_pkthdr &header, const u_char *packet)
 {
     printf("Captured a TCP packet with length: %d\n", header.len);
+    ParsePacket(packet, header.len);
 }
