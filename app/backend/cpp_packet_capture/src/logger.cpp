@@ -4,7 +4,7 @@
 
 using namespace std;
 
-std::shared_ptr<spdlog::logger> fileLogger = spdlog::rotating_logger_mt("rotating_logger", "logs.txt", 1048576 * 5, 3);
+std::shared_ptr<spdlog::logger> fileLogger = spdlog::rotating_logger_mt("rotating_logger", "logs.log", 1048576 * 5, 3);
 
 void writeToLog(const MessagesTypes &type, const string &message)
 {
