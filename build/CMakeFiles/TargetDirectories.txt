@@ -1,3 +1,0 @@
-/home/tymon/coding/NetworkPacketAnalyzerAndSecurityScanner/build/CMakeFiles/packet_capture.dir
-/home/tymon/coding/NetworkPacketAnalyzerAndSecurityScanner/build/CMakeFiles/edit_cache.dir
-/home/tymon/coding/NetworkPacketAnalyzerAndSecurityScanner/build/CMakeFiles/rebuild_cache.dir
