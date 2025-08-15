@@ -12,6 +12,12 @@ using namespace std;
 
 ParsePacket::ParsePacket(const uint8_t *data, size_t len)
 {
+    if (data == nullptr)
+    {
+        writeToLog(error, "Received null packet data");
+        return;
+    }
+
     parsePacket(data, len);
 }
 

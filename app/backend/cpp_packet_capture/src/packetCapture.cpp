@@ -2,6 +2,7 @@
 #include <string>
 #include "../include/logger.h"
 #include "../include/packetParsing.h"
+#include "../include/stopAtomic.h"
 
 using namespace std;
 
@@ -68,7 +69,7 @@ void PacketCapturer::capturePackets()
     struct pcap_pkthdr header;
     const u_char *packet;
 
-    while ((packet = pcap_next(this->handle, &header)) != NULL)
+    while (((packet = pcap_next(this->handle, &header)) != NULL) && !stopCapture.load())
     {
         packetHandler(header, packet);
     }

@@ -1,3 +1,4 @@
+find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 cmake_minimum_required(VERSION 3.10)
 project(PacketCapture)
 
@@ -35,19 +36,41 @@ if(NOT spdlog_FOUND)
     FetchContent_MakeAvailable(spdlog)
 endif()
 
+# Python module
+include(FetchContent)
+FetchContent_Declare(
+    pybind11
+    GIT_REPOSITORY https://github.com/pybind/pybind11.git
+    GIT_TAG v2.13.1
+)
+FetchContent_MakeAvailable(pybind11)
 
-add_executable(packet_capture
-                main.cpp
-                src/preprocessing.cpp 
-                src/packetCapture.cpp 
-                src/packetParsing.cpp
-                src/logger.cpp
-                )
+# Shared code files
+set(SRC_FILES
+    src/preprocessing.cpp
+    src/packetCapture.cpp
+    src/packetParsing.cpp
+    src/logger.cpp
+    src/start.cpp
+    src/stopAtomic.cpp
+)
 
 
-target_link_libraries(packet_capture ${PCAP_LIBRARIES} spdlog::spdlog)
-target_include_directories(packet_capture PRIVATE ${PCAP_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include())
-target_compile_options(packet_capture PRIVATE ${PCAP_CFLAGS_OTHER})
+# Standalone executable (optional)
+add_executable(packetCapture main.cpp ${SRC_FILES})
+target_link_libraries(packetCapture PRIVATE ${PCAP_LIBRARIES} spdlog::spdlog)
+target_include_directories(packetCapture PRIVATE ${PCAP_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_compile_options(packetCapture PRIVATE ${PCAP_CFLAGS_OTHER})
+
+# Output the compiled .so directly into python_backend
+set(PYTHON_MODULE_OUTPUT_DIR ${CMAKE_SOURCE_DIR}/../python_backend)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PYTHON_MODULE_OUTPUT_DIR})
+
+# Python module
+pybind11_add_module(packetCapturePy _pybind/pybind.cpp ${SRC_FILES})
+target_link_libraries(packetCapturePy PRIVATE ${PCAP_LIBRARIES} spdlog::spdlog)
+target_include_directories(packetCapturePy PRIVATE ${PCAP_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_compile_options(packetCapturePy PRIVATE ${PCAP_CFLAGS_OTHER})
 
 
 
