@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <string>
 
-
 using namespace std;
 
 class PacketCapturer
@@ -15,6 +14,7 @@ private:
     char errbuf[PCAP_ERRBUF_SIZE];
     pcap_t *handle;
     struct bpf_program fp;
+    bool isRunning;
 
 public:
     PacketCapturer(const char *deviceName);
@@ -23,7 +23,7 @@ public:
     bool applyFilter();
     void capturePackets();
     void packetHandler(const struct pcap_pkthdr &header, const u_char *packet);
-
+    void stop();
     ~PacketCapturer();
 };
 

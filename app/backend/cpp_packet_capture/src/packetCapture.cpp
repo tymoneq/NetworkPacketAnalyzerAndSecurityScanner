@@ -2,7 +2,7 @@
 #include <string>
 #include "../include/logger.h"
 #include "../include/packetParsing.h"
-#include "../include/stopAtomic.h"
+#include "../include/manage.h"
 
 using namespace std;
 
@@ -14,13 +14,13 @@ PacketCapturer::PacketCapturer(const char *deviceName)
     openDevice(deviceName);
     compileFilter();
     applyFilter();
-    capturePackets();
 }
 
 PacketCapturer::~PacketCapturer()
 {
     pcap_freecode(&this->fp);
     pcap_close(this->handle);
+    this->handle = nullptr;
 }
 
 bool PacketCapturer::openDevice(const char *deviceName)
@@ -65,14 +65,26 @@ bool PacketCapturer::applyFilter()
 
 void PacketCapturer::capturePackets()
 {
+    this->isRunning = true;
     writeToLog(info, "Starting capturing packages");
     struct pcap_pkthdr header;
     const u_char *packet;
 
-    while (((packet = pcap_next(this->handle, &header)) != NULL) && !stopCapture.load())
+    while (((packet = pcap_next(this->handle, &header)) != NULL))
     {
-        packetHandler(header, packet);
+        if (packet && isRunning)
+        {
+            packetHandler(header, packet);
+        }
     }
+}
+void PacketCapturer::stop()
+{
+    this->isRunning = false;
+    writeToLog(info, "Stopping packet capture");
+    if (this->handle)
+        pcap_breakloop(this->handle);
+    
 }
 
 void PacketCapturer::packetHandler(const struct pcap_pkthdr &header, const u_char *packet)

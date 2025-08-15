@@ -51,8 +51,8 @@ set(SRC_FILES
     src/packetCapture.cpp
     src/packetParsing.cpp
     src/logger.cpp
-    src/start.cpp
-    src/stopAtomic.cpp
+    src/manage.cpp
+
 )
 
 

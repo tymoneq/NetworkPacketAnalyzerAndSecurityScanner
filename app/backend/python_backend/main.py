@@ -1,14 +1,14 @@
 import packetCapturePy
-
+import threading
 import time
 
-# Start capture (non-blocking if you run in a thread)
-import threading
+
 t = threading.Thread(target=packetCapturePy.start)
 t.start()
+
 
 time.sleep(5)  # let it run for 5 seconds
 
 packetCapturePy.stop()  # signal the capturer to stop
-t.join()                # wait for thread to finish
+t.join()  # wait for thread to finish
 print("Capture stopped.")
