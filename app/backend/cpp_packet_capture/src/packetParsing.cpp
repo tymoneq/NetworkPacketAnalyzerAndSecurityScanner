@@ -1,11 +1,12 @@
 #include "../include/packetParsing.h"
 #include "../include/logger.h"
+#include "../include/networkStructures.h"
+#include "../include/preprocessing.h"
 #include <cstdint>
 #include <cstring>
 #include <arpa/inet.h>
 #include <pcap.h>
 #include <stdlib.h>
-#include <iostream>
 
 using namespace std;
 
@@ -35,6 +36,11 @@ void ParsePacket::parsePacket(const uint8_t *data, size_t len)
     uint8_t ipHeaderProtocol = ip->protocol;
     uint8_t ipHeaderLength = (ip->versionIhl & 0x0F) * 4;
 
+    Package package;
+    package.len = len;
+    package.ethernet = (*eth);
+    package.ip = (*ip);
+
     if (ipHeaderProtocol == 6)
     {
         if (!checkTCPHeader(len, ipHeaderLength))
@@ -44,9 +50,7 @@ void ParsePacket::parsePacket(const uint8_t *data, size_t len)
 
         writeToLog(info, "TCP packet parsed");
 
-        cout << "TCP packet from port : " << ntohs(tcp->sourcePort) << " to port: " << ntohs(tcp->destinationPort) << "\n";
-
-        
+        package.tcp = (*tcp);
     }
 
     else if (ipHeaderProtocol == 17)
@@ -57,11 +61,11 @@ void ParsePacket::parsePacket(const uint8_t *data, size_t len)
         const UDPHeader *udp = reinterpret_cast<const UDPHeader *>(data + sizeof(EthernetHeader) + ipHeaderLength);
 
         writeToLog(info, "UDP packet parsed");
-        cout << "UPD packet from port: " << ntohs(udp->sourcePort) << " to port : " << ntohs(udp->destinationPort) << "\n";
+
+        package.udp = (*udp);
     }
 
-    else
-        cout << "Other protocol\n";
+    Preprocessing processor(package);
 }
 
 bool ParsePacket::checkEthHeader(const size_t &len)
@@ -88,7 +92,7 @@ bool ParsePacket::checkIPv4Header(const size_t &len, const uint16_t &etherType)
         return false;
     }
 
-    writeToLog(info, "ipv4 header detected");
+    writeToLog(info, "Ipv4 header detected");
     return true;
 }
 
@@ -102,7 +106,7 @@ bool ParsePacket::checkTCPHeader(const size_t &len, const uint8_t &ipHeaderLengt
         return false;
     }
 
-    writeToLog(info, "tcp header detected");
+    writeToLog(info, "Tcp header detected");
     return true;
 }
 
@@ -116,7 +120,7 @@ bool ParsePacket::checkUDPHeader(const size_t &len, const uint8_t &ipHeaderLengt
         return false;
     }
 
-    writeToLog(info, "udp header detected");
+    writeToLog(info, "Udp header detected");
     return true;
 }
 

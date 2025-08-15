@@ -6,10 +6,10 @@
 
 using namespace std;
 
-int main()
+void start()
 {
-    // Initialize logging
 
+    cout << "Starting ...\n";
     writeToLog(info, "Starting packet capture program");
 
     char errbuf[PCAP_ERRBUF_SIZE];
@@ -18,15 +18,22 @@ int main()
     if (pcap_findalldevs(&alldevices, errbuf) == -1)
     {
         writeToLog(error, "Could not find any device");
-        return -1;
+        return;
     }
 
     writeToLog(info, "Successfully found devices");
 
+    cout << "Successfully found devices ...\n";
+    cout << "Starting capturing\n";
     PacketCapturer packetCapture(alldevices->name);
 
     writeToLog(info, "Closing packet capture program");
     pcap_freealldevs(alldevices);
+}
+
+int main()
+{
+    start();
 
     return 0;
 }

@@ -76,6 +76,7 @@ void PacketCapturer::capturePackets()
 
 void PacketCapturer::packetHandler(const struct pcap_pkthdr &header, const u_char *packet)
 {
-    printf("Captured a TCP packet with length: %d\n", header.len);
+
+    writeToLog(info, "Captured a TCP packet with length: " + to_string(header.len));
     ParsePacket(packet, header.len);
 }
