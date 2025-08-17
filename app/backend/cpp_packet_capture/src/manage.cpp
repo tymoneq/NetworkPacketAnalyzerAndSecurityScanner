@@ -3,12 +3,13 @@
 #include <memory>
 #include "../include/packetCapture.h"
 #include <iostream>
+#include "../include/networkStructures.h"
 
 using namespace std;
 
 std::unique_ptr<PacketCapturer> capturer;
 
-void start()
+void initialize()
 {
     writeToLog(info, "Starting packet capture program");
     cout << "Starting packet capture\n";
@@ -29,8 +30,6 @@ void start()
         capturer = std::make_unique<PacketCapturer>(alldevices->name);
         pcap_freealldevs(alldevices); // Free device list after use
 
-        // Start capture
-        capturer->capturePackets();
     }
     catch (const std::exception &e)
     {
@@ -39,6 +38,11 @@ void start()
             pcap_freealldevs(alldevices);
     }
 }
+FeaturePacket getPacket()
+{
+    return capturer->capturePacket();
+}
+
 
 void stop()
 {

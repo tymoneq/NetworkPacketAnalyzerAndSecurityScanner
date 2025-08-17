@@ -1,15 +1,16 @@
 import packetCapturePy
-import threading
-import time
+import sys
 
+print(
+    f"Python version: {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+)
 
-t = threading.Thread(target=packetCapturePy.start)
-t.start()
+packetCapturePy.initialize()
+fp = packetCapturePy.FeaturePacket()
 
+for i in range(5):
+    fp = packetCapturePy.getPacket()
+    print(fp)
 
-
-time.sleep(5)  # let it run for 5 seconds
 
 packetCapturePy.stop()  # signal the capturer to stop
-t.join()  # wait for thread to finish
-print("Capture stopped.")

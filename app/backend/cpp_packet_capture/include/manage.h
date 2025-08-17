@@ -1,6 +1,10 @@
 #ifndef MANAGE
 #define MANAGE
 
-void start();
+#include "networkStructures.h"
+
+void initialize();
+FeaturePacket getPacket();
 void stop();
+
 #endif

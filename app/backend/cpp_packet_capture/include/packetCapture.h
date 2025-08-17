@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include "networkStructures.h"
 
 using namespace std;
 
@@ -21,8 +22,8 @@ public:
     bool openDevice(const char *deviceName);
     bool compileFilter();
     bool applyFilter();
-    void capturePackets();
-    void packetHandler(const struct pcap_pkthdr &header, const u_char *packet);
+    FeaturePacket capturePacket();
+    FeaturePacket packetHandler(const struct pcap_pkthdr &header, const u_char *packet);
     void stop();
     ~PacketCapturer();
 };

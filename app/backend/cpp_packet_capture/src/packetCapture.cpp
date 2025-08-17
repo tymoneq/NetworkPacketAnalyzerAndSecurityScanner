@@ -85,32 +85,29 @@ bool PacketCapturer::applyFilter()
     return true;
 }
 
-void PacketCapturer::capturePackets()
+FeaturePacket PacketCapturer::capturePacket()
 {
-    this->isRunning = true;
-    writeToLog(info, "Starting capturing packages");
+    writeToLog(info, "Starting capturing package");
     struct pcap_pkthdr header;
     const u_char *packet;
 
-    while (((packet = pcap_next(this->handle, &header)) != NULL))
-    {
-        if (packet && isRunning)
-        {
-            packetHandler(header, packet);
-        }
-    }
+    packet = pcap_next(this->handle, &header);
+    if (packet)
+        return packetHandler(header, packet);
+    return FeaturePacket{};
 }
 void PacketCapturer::stop()
 {
-    this->isRunning = false;
     writeToLog(info, "Stopping packet capture");
     if (this->handle)
         pcap_breakloop(this->handle);
 }
 
-void PacketCapturer::packetHandler(const struct pcap_pkthdr &header, const u_char *packet)
+FeaturePacket PacketCapturer::packetHandler(const struct pcap_pkthdr &header, const u_char *packet)
 {
 
     writeToLog(info, "Captured a TCP packet with length: " + to_string(header.len));
-    ParsePacket(packet, header.len);
+    ParsePacket parsePacket(packet, header.len);
+
+    return parsePacket.getPreprocessedPacket();
 }

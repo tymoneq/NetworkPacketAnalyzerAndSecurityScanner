@@ -18,6 +18,8 @@ ParsePacket::ParsePacket(const uint8_t *data, size_t len)
         return;
     }
 
+    this->preprocessedPacket = {};
+
     parsePacket(data, len);
 }
 
@@ -72,6 +74,8 @@ void ParsePacket::parsePacket(const uint8_t *data, size_t len)
     }
 
     Preprocessing processor(package);
+
+    this->preprocessedPacket = processor.getPacket();
 }
 
 bool ParsePacket::checkEthHeader(const size_t &len)
@@ -128,6 +132,11 @@ bool ParsePacket::checkUDPHeader(const size_t &len, const uint8_t &ipHeaderLengt
 
     writeToLog(info, "Udp header detected");
     return true;
+}
+
+FeaturePacket ParsePacket::getPreprocessedPacket() const
+{
+    return this->preprocessedPacket;
 }
 
 ParsePacket::~ParsePacket() {}
