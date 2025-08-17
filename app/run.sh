@@ -10,8 +10,8 @@ NC='\033[0m' #no color
 
 # Get the directory where the script is located
 APP_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-CPP_DIR="$APP_DIR/backend/cpp_packet_capture"
-PYTHON_DIR="$APP_DIR/backend/python_backend"
+CPP_DIR="$APP_DIR/backend/cppPacketCapture"
+PYTHON_DIR="$APP_DIR/backend/pythonBackend"
 VENV_DIR="$APP_DIR/.venv"
 
 # Function to check if command was successful

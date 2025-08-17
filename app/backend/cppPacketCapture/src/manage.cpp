@@ -50,8 +50,6 @@ void stop()
     cout << "Stoping\n";
 
     if (capturer)
-    {
-        capturer->stop();
         capturer.reset();
-    }
+    
 }

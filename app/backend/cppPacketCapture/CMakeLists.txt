@@ -83,7 +83,7 @@ target_include_directories(packetCapture PRIVATE ${PCAP_INCLUDE_DIRS} ${CMAKE_CU
 target_compile_options(packetCapture PRIVATE ${PCAP_CFLAGS_OTHER})
 
 # Output the compiled .so directly into python_backend
-set(PYTHON_MODULE_OUTPUT_DIR ${CMAKE_SOURCE_DIR}/../python_backend)
+set(PYTHON_MODULE_OUTPUT_DIR ${CMAKE_SOURCE_DIR}/../pythonBackend)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PYTHON_MODULE_OUTPUT_DIR})
 
 # Python module
