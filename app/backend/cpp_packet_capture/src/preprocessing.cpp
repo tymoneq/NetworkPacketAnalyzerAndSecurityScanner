@@ -59,6 +59,11 @@ void Preprocessing::preprocess()
     writeToLog(info, "Finished preprocessing");
 }
 
+FeaturePacket Preprocessing::getPacket() const
+{
+    return this->featurePacket;
+}
+
 Preprocessing::~Preprocessing()
 {
 }

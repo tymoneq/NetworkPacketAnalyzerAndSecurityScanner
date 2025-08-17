@@ -3,6 +3,7 @@
 #include "../include/logger.h"
 #include "../include/packetParsing.h"
 #include "../include/manage.h"
+#include <stdexcept>
 
 using namespace std;
 
@@ -11,20 +12,41 @@ PacketCapturer::PacketCapturer(const char *deviceName)
 
     writeToLog(info, "Creating PacketCapture class");
 
-    openDevice(deviceName);
-    compileFilter();
-    applyFilter();
+    if (!openDevice(deviceName))
+        throw ::std::runtime_error(string("Failed to open device"));
+
+    if (!compileFilter())
+    {
+        pcap_close(handle);
+        throw ::std::runtime_error(string("Failed to compile filter"));
+    }
+    if (!applyFilter())
+    {
+        pcap_freecode(&fp);
+        pcap_close(handle);
+        throw ::std::runtime_error(string("Failed to apply filter"));
+    }
 }
 
 PacketCapturer::~PacketCapturer()
 {
-    pcap_freecode(&this->fp);
-    pcap_close(this->handle);
-    this->handle = nullptr;
+    stop();
+    if (handle)
+    {
+        pcap_freecode(&this->fp);
+        pcap_close(this->handle);
+        this->handle = nullptr;
+    }
 }
 
 bool PacketCapturer::openDevice(const char *deviceName)
 {
+    if (!deviceName)
+    {
+        writeToLog(error, "Device name is null");
+        return false;
+    }
+
     this->handle = pcap_open_live(deviceName, BUFSIZ, 1, 1000, this->errbuf);
 
     if (handle == NULL)
@@ -84,7 +106,6 @@ void PacketCapturer::stop()
     writeToLog(info, "Stopping packet capture");
     if (this->handle)
         pcap_breakloop(this->handle);
-    
 }
 
 void PacketCapturer::packetHandler(const struct pcap_pkthdr &header, const u_char *packet)

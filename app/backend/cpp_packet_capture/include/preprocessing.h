@@ -21,6 +21,7 @@ public:
     void preprocess();
     uint64_t macToInt(const uint8_t mac[6]);
     ~Preprocessing();
+    FeaturePacket getPacket() const;
 };
 
 #endif
