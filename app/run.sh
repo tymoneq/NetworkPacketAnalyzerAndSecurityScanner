@@ -102,15 +102,13 @@ run_tests $1
 
 # If we get here, tests either passed or using --skip-on-fail
 echo -e "\n${BLUE}Starting Python backend...${NC}"
-cd "$PYTHON_DIR"
+cd "$APP_DIR"
 
-# Run Python script
-python3 main.py
+# Run Python script as module
+"$APP_DIR/.venv/bin/python3" -m backend.pythonBackend.main
 check_status "Python execution"
 
 echo -e "${GREEN}All components completed${NC}"
-
-
 
 
 
