@@ -1,24 +1,28 @@
 from . import packetCapturePy
-from .dataBaseManager.functions import savePacket, getFeatures
-from .dataBaseManager.database import init_db, SessionLocal
-from .dataBaseManager.models import FeaturePacketModel
+from .dataBaseManager.functions import savePacket
+from .dataBaseManager.database import initDb, SessionLocal, closeDb
 from .logger.logger import *
+from .threatDetection.synDetection.synFloodDetection import SynFloodDetection
+
 
 writeToLogPy(info, "Starting Python")
 
-init_db()
+initDb()
 session = SessionLocal()
 
 packetCapturePy.initialize()
 fp = packetCapturePy.FeaturePacket()
 
 writeToLogPy(info, "Starting capturing packages")
+
 for i in range(5):
     fp = packetCapturePy.getPacket()
     savePacket(fp, session)
 
 
-getFeatures(session)
+synFloodDetection = SynFloodDetection(session)
+synFloodDetection.printDf()
 
 
 packetCapturePy.stop()  # signal the capturer to stop
+closeDb(session)

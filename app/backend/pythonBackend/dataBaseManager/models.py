@@ -1,5 +1,6 @@
-from sqlalchemy import Column, BigInteger, Integer, Float, String
+from sqlalchemy import Column, BigInteger, Integer, TIMESTAMP, String
 from .database import Base
+import datetime
 
 
 class FeaturePacketModel(Base):
@@ -26,12 +27,7 @@ class FeaturePacketModel(Base):
     lengthOrWindow = Column(Integer)
     tcpFlags = Column(Integer)
 
+    # timestamp
+    createdAt = Column(TIMESTAMP, default=datetime.datetime.now(datetime.timezone.utc))
 
-class DerivedFeaturesModel(Base):
-    __tablename__ = "derivedFeatures"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    srcIp = Column(String)
-    packetCount = Column(Integer)
-    unusualPorts = Column(String) # saved as coma seperated values
-    ipFrequency = Column(Integer)

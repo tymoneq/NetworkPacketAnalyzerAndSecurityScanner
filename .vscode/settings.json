@@ -1,5 +1,5 @@
 {
-    "cmake.sourceDirectory": "/home/tymon/coding/NetworkPacketAnalyzerAndSecurityScanner/app/backend/cpp_packet_capture",
+    "cmake.sourceDirectory": "/home/tymon/coding/NetworkPacketAnalyzerAndSecurityScanner/app/backend/cppPacketCapture",
     "files.associations": {
         "iostream": "cpp",
         "iosfwd": "cpp",
@@ -82,5 +82,6 @@
         "valarray": "cpp",
         "variant": "cpp",
         "regex": "cpp"
+
     }
 }

@@ -12,7 +12,7 @@ NC='\033[0m' #no color
 APP_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 CPP_DIR="$APP_DIR/backend/cppPacketCapture"
 PYTHON_DIR="$APP_DIR/backend/pythonBackend"
-VENV_DIR="$APP_DIR/.venv"
+VENV_DIR="$APP_DIR/../.venv"
 
 # Function to check if command was successful
 check_status(){
@@ -105,10 +105,9 @@ echo -e "\n${BLUE}Starting Python backend...${NC}"
 cd "$APP_DIR"
 
 # Run Python script as module
-"$APP_DIR/.venv/bin/python3" -m backend.pythonBackend.main
+"$APP_DIR/../.venv/bin/python3" -m backend.pythonBackend.main
 check_status "Python execution"
 
 echo -e "${GREEN}All components completed${NC}"
-
 
 

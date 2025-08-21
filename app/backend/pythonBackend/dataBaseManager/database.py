@@ -18,6 +18,9 @@ engine = create_engine(f"sqlite:///{db_path}")
 SessionLocal = sessionmaker(bind=engine)
 
 
-def init_db():
+def initDb():
     Base.metadata.create_all(engine)
     writeToLogPy(info, "Database initialized")
+
+def closeDb(session):
+    session.close()

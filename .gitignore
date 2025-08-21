@@ -3,6 +3,8 @@
 build/
 /build
 /app/backend/cpp_packet_capture/build/
+.vscode
+.venv
 
 # CMake generated files
 CMakeCache.txt
