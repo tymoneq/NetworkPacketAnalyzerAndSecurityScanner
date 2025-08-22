@@ -30,7 +30,8 @@ This project is a Network Packet Analyzer and Security Scanner designed to monit
 
 1. Start the application:
    ```bash
-   python main.py
+   cd app
+   sudo ./run.sh
    ```
 
 2. Follow the on-screen instructions to configure the network interfaces and start monitoring.
