@@ -1,33 +1,65 @@
 import pandas as pd
 import numpy as np
-from ...dataBaseManager.functions import getFeatures
+from ..featuresEngineering.synFloodFeaturesEngineering import AnalyzePackets
+from ...logger.logger import *
 
 
 class SynFloodDetection:
     def __init__(
         self,
         session,
-        timeWindow=1200,  # in seconds
+        timeWindow=5,  # in minutes
         synThreshold=100,
         ratioThreshold=10,
         halfOpenThreshold=50,
     ):
         self.session = session
-        self.derivedFeaturesDf = getFeatures(self.session, timeWindow)
         self.timeWindow = timeWindow
         self.synThreshold = synThreshold
         self.ratioThreshold = ratioThreshold
         self.halfOpenThreshold = halfOpenThreshold
+        self.derivedFeaturesDf = pd.DataFrame()
+        self.analyzePackets = AnalyzePackets(session, timeWindow)
 
-        self.detectSynFlood()
+    def checkIfDataFrameNotNone(self):
+        if self.derivedFeaturesDf.empty:
+            self.reloadDataframe()
 
     def printDf(self):
+        self.checkIfDataFrameNotNone()
         print(self.derivedFeaturesDf.head())
 
+    def reloadDataframe(self):
+        writeToLogPy(info, "Reloading data frame")
+        self.derivedFeaturesDf = self.analyzePackets.getFeatures()
+
     def detectSynFlood(self):
+        halfOpenCnt = self.halfOpenThreshold
+
+        writeToLogPy(info, "Starting Syn Flood Detection")
+
         for index, row in self.derivedFeaturesDf.iterrows():
             if row["synFrequency"] >= self.synThreshold:
-                print("Syn Flood Detected")
+                writeToLogPy(warn, "Syn Attack Detected")
+                # add blocking
+                break
 
+            if row["synFrequency"] > 0:
+                halfOpenCnt -= row["synFrequency"]
 
-    # implement half open threshold detection
+            if row["ackFrequency"] > 0:
+                halfOpenCnt += row["ackFrequency"]
+
+            if halfOpenCnt <= 0:
+                writeToLogPy(warn, "Syn Attack Detected")
+                # add blocking
+                break
+
+    def startSynFloodDetection(self):
+        self.reloadDataframe()
+        self.detectSynFlood()
+
+    def saveDataFrameToCsv(self):
+        writeToLogPy(info, "Saving Data to csv")
+        self.checkIfDataFrameNotNone()
+        self.derivedFeaturesDf.to_csv("derivedFeatures.csv", index=False)
