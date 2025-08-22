@@ -83,5 +83,10 @@
         "variant": "cpp",
         "regex": "cpp"
 
-    }
+    },
+    "docwriter.progress.trackClasses": true,
+    "docwriter.progress.trackTypes": true,
+    "docwriter.progress.trackFunctions": true,
+    "docwriter.progress.trackMethods": true,
+    "docwriter.style": "NumPy"
 }

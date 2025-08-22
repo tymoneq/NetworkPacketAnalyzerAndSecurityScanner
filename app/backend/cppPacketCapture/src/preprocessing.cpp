@@ -7,12 +7,24 @@
 
 using namespace std;
 
+/**
+ * This function initializes the Preprocessing object with the provided Package object.
+ * 
+ * Parameters
+ * ----------
+ * package : Package
+ * 	It seems like you were about to provide some information about the `package` parameter. Could you
+ * please provide more details or let me know how I can assist you further with the `Preprocessing`
+ * constructor?
+ */
 Preprocessing::Preprocessing(const Package &package)
 {
     this->package = package;
     preprocess();
 }
 
+/* The `inline uint64_t Preprocessing::macToInt(const uint8_t mac[6])` function is converting a MAC
+address represented as an array of 6 bytes (uint8_t) into a single 64-bit integer (uint64_t). */
 inline uint64_t Preprocessing::macToInt(const uint8_t mac[6])
 {
     return ((uint64_t)mac[0] << 40) |
@@ -22,6 +34,9 @@ inline uint64_t Preprocessing::macToInt(const uint8_t mac[6])
            ((uint64_t)mac[4] << 8) |
            (uint64_t)mac[5];
 }
+/* The `void Preprocessing::preprocess()` function is responsible for processing the data from the
+`Package` object and populating the `FeaturePacket` object with the extracted information. Here is a
+breakdown of what the function is doing: */
 void Preprocessing::preprocess()
 {
     writeToLog(info, "Starting preprocessing ...");
@@ -59,6 +74,11 @@ void Preprocessing::preprocess()
     writeToLog(info, "Finished preprocessing");
 }
 
+/* The `FeaturePacket Preprocessing::getPacket() const` function is a member function of the
+`Preprocessing` class that returns a constant reference to the `FeaturePacket` object stored within
+the `Preprocessing` instance. By using the `const` keyword at the end of the function declaration,
+it indicates that this member function does not modify the state of the `Preprocessing` object on
+which it is called. */
 FeaturePacket Preprocessing::getPacket() const
 {
     return this->featurePacket;

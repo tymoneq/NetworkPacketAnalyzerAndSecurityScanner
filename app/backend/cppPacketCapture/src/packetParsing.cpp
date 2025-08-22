@@ -10,6 +10,19 @@
 
 using namespace std;
 
+/**
+ * This function initializes a ParsePacket object with the provided data and length.
+ * 
+ * Parameters
+ * ----------
+ * data : uint8_t
+ * 	The `data` parameter in the `ParsePacket` constructor is a pointer to an array of `uint8_t` data,
+ * which represents the packet data that needs to be parsed.
+ * len : size_t
+ * 	The `len` parameter in the `ParsePacket` constructor represents the length of the data array that
+ * is being passed to the constructor. It indicates the number of elements in the `data` array that
+ * need to be processed by the `ParsePacket` constructor.
+ */
 ParsePacket::ParsePacket(const uint8_t *data, size_t len)
 {
     if (data == nullptr)
@@ -23,6 +36,19 @@ ParsePacket::ParsePacket(const uint8_t *data, size_t len)
     parsePacket(data, len);
 }
 
+/**
+ * This function is used to parse a packet of data represented by a uint8_t array.
+ * 
+ * Parameters
+ * ----------
+ * data : uint8_t
+ * 	Data is a pointer to an array of unsigned 8-bit integers (uint8_t) which represents the packet data
+ * to be parsed.
+ * len : size_t
+ * 	The `len` parameter represents the length of the data array that is being passed to the
+ * `parsePacket` function. It indicates the number of elements in the array that need to be processed
+ * by the function.
+ */
 void ParsePacket::parsePacket(const uint8_t *data, size_t len)
 {
 
@@ -78,6 +104,8 @@ void ParsePacket::parsePacket(const uint8_t *data, size_t len)
     this->preprocessedPacket = processor.getPacket();
 }
 
+/* The `bool ParsePacket::checkEthHeader(const size_t &len)` function is checking the presence of an
+Ethernet header in the packet data. Here's a breakdown of what it does: */
 bool ParsePacket::checkEthHeader(const size_t &len)
 {
     writeToLog(info, "Checking ethernet header...");
@@ -92,6 +120,8 @@ bool ParsePacket::checkEthHeader(const size_t &len)
     return true;
 }
 
+/* The `bool ParsePacket::checkIPv4Header(const size_t &len, const uint16_t &etherType)` function is
+checking for the presence of an IPv4 header in the packet data. Here's a breakdown of what it does: */
 bool ParsePacket::checkIPv4Header(const size_t &len, const uint16_t &etherType)
 {
     writeToLog(info, "Checking ipv4 header...");
@@ -106,6 +136,9 @@ bool ParsePacket::checkIPv4Header(const size_t &len, const uint16_t &etherType)
     return true;
 }
 
+/* The `bool ParsePacket::checkTCPHeader(const size_t &len, const uint8_t &ipHeaderLength)` function is
+responsible for checking the presence of a TCP header in the packet data. Here's a breakdown of what
+it does: */
 bool ParsePacket::checkTCPHeader(const size_t &len, const uint8_t &ipHeaderLength)
 {
     writeToLog(info, "Checking tcp header...");
@@ -120,6 +153,9 @@ bool ParsePacket::checkTCPHeader(const size_t &len, const uint8_t &ipHeaderLengt
     return true;
 }
 
+/* The `bool ParsePacket::checkUDPHeader(const size_t &len, const uint8_t &ipHeaderLength)` function is
+responsible for checking the presence of a UDP header in the packet data. Here's a breakdown of what
+it does: */
 bool ParsePacket::checkUDPHeader(const size_t &len, const uint8_t &ipHeaderLength)
 {
     writeToLog(info, "Checking udp header...");
@@ -133,6 +169,9 @@ bool ParsePacket::checkUDPHeader(const size_t &len, const uint8_t &ipHeaderLengt
     writeToLog(info, "Udp header detected");
     return true;
 }
+/**
+ * This function returns a preprocessed feature packet.
+ */
 
 FeaturePacket ParsePacket::getPreprocessedPacket() const
 {

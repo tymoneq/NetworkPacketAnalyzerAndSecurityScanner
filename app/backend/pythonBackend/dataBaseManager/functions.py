@@ -3,6 +3,19 @@ from ..logger.logger import *
 
 
 def savePacket(pkt, session):
+    '''This function saves a packet and associates it with a session.
+    
+    Parameters
+    ----------
+    pkt
+        The `pkt` parameter likely refers to a packet of data that needs to be saved. This could be a
+    network packet, a data packet, or any other unit of data being transmitted or processed.
+    session
+        The `savePacket` function seems to be missing some information about the `session` parameter. Could
+    you please provide more details or context about what the `session` parameter represents or how it
+    is used within the function? This will help me provide a more accurate explanation or code snippet.
+    
+    '''
     writeToLogPy(info, "Saving packet to database")
     packetRow = FeaturePacketModel(
         srcMac=pkt.srcMac,

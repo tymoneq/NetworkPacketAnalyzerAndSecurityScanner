@@ -22,6 +22,9 @@ class SynFloodDetection:
         self.analyzePackets = AnalyzePackets(session, timeWindow)
 
     def checkIfDataFrameNotNone(self):
+        '''This function checks if a DataFrame object is not None.
+        
+        '''
         if self.derivedFeaturesDf.empty:
             self.reloadDataframe()
 
@@ -38,6 +41,8 @@ class SynFloodDetection:
 
         writeToLogPy(info, "Starting Syn Flood Detection")
 
+        # This part of the code is iterating over each row in the `self.derivedFeaturesDf` DataFrame
+        # and performing checks related to SYN flood detection. Here's a breakdown of what it does:
         for index, row in self.derivedFeaturesDf.iterrows():
             if row["synFrequency"] >= self.synThreshold:
                 writeToLogPy(warn, "Syn Attack Detected")

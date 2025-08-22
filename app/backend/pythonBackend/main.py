@@ -15,7 +15,7 @@ fp = packetCapturePy.FeaturePacket()
 
 writeToLogPy(info, "Starting capturing packages")
 
-for i in range(50):
+for i in range(5):
     fp = packetCapturePy.getPacket()
     savePacket(fp, session)
 
@@ -25,9 +25,9 @@ for i in range(50):
 synFloodDetection = SynFloodDetection(session)
 synFloodDetection.startSynFloodDetection()
 
-print("TEST")
+
 features = GetFeatures(session)
-features.loadModelToDf()
+features.run()
 
 
 packetCapturePy.stop()  # signal the capturer to stop
