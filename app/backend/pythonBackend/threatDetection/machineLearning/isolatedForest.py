@@ -2,7 +2,6 @@ from ..featuresEngineering.featuresEngineering import GetFeatures
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import IsolationForest
-from sklearn.model_selection import train_test_split
 from ...logger.logger import *
 
 
