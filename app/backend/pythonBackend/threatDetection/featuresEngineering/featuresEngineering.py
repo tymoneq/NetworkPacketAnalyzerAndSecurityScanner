@@ -3,9 +3,11 @@ import numpy as np
 from ...dataBaseManager.models import FeaturePacketModel
 import datetime
 from ...logger.logger import *
+import warnings
+from sklearn.preprocessing import StandardScaler
+from .columnNames import columnList, choseColumns
 
-
-columnList = ["hour", "dayOfTheWeek", "timeWindow"]
+warnings.simplefilter(action="ignore", category=FutureWarning)
 
 
 class GetFeatures:
@@ -34,10 +36,23 @@ class GetFeatures:
         self.timeWindow = timeWindow
         self.daysBack = daysBack
         self.df = pd.DataFrame(columns=columnList)
+        self.scaler = StandardScaler()
 
     def run(self):
-        self.loadModelToDf()
-        self.extractFeatures()
+        '''The `run` function loads a model to a DataFrame, extracts features from the packets, aggregates
+        the data, scales it, and returns the extracted columns.
+        
+        Returns
+        -------
+            The `extractedColumns()` method is being called and its return value is being returned from the
+        `run()` method.
+        
+        '''
+        packets = self.loadModelToDf()
+        self.extractFeatures(packets)
+        self.aggregate()
+        self.scale()
+        return self.extractedColumns()
 
     def loadModelToDf(self):
         """This function is intended to load a model into a DataFrame."""
@@ -51,6 +66,8 @@ class GetFeatures:
             .filter(FeaturePacketModel.createdAt > startDate)
             .all()
         )
+
+        return packets
 
     def extractFeatures(self, packets):
         """This function extracts features from a list of packets.
@@ -67,11 +84,114 @@ class GetFeatures:
         writeToLogPy(info, "Starting to extract features")
         for pack in packets:
             newRowsData = self.extractDate(pack.createdAt)
+            newRowsData["srcIp"] = pack.srcIp
+            newRowsData["dstIp"] = pack.dstIp
+            newRowsData["sourcePort"] = pack.sourcePort
+            newRowsData["destinationPort"] = pack.destinationPort
+            newRowsData["totalLength"] = int(pack.totalLength)
+            newRowsData["tcpFlags"] = pack.tcpFlags
+            newRowsData["protocol"] = pack.protocol
+            newRowsData["ttl"] = pack.ttl
+
             newRowsDf = pd.DataFrame(newRowsData)
+            newRowsDf["isWeekend"] = newRowsDf["dayOfTheWeek"].isin([5, 6]).astype(int)
+            newRowsDf["isNight"] = (
+                newRowsDf["hour"].isin([22, 23, 24, 0, 1, 2, 3, 4, 5, 6]).astype(int)
+            )
 
             self.df = pd.concat([self.df, newRowsDf], ignore_index=True)
 
-        print(self.df.head())
+    def aggregate(self):
+        '''The function `aggregate` aggregates network traffic features based on specified groupings and
+        calculates additional derived features.
+        
+        '''
+       
+        writeToLogPy(info, "Starting to aggregate features")
+
+        agg_features = (
+            self.df.groupby(
+                ["srcIp", "timeWindow", "isWeekend", "isNight", "dayOfTheWeek", "hour"]
+            )
+            .agg(
+                {
+                    "dstIp": ["count", "nunique"],
+                    "sourcePort": "nunique",
+                    "destinationPort": [
+                        "nunique",
+                        lambda x: x.mode().iloc[0] if not x.empty else 0,
+                    ],
+                    "totalLength": ["mean", "std", "sum"],
+                    "tcpFlags": lambda x: (x == 2).sum(),
+                    "protocol": lambda x: x.mode().iloc[0] if not x.empty else 0,
+                    "ttl": ["mean", "std"],
+                }
+            )
+            .reset_index()
+        )
+
+        # Flatten column names
+        agg_features.columns = [
+            "srcIp",
+            "timeWindow",
+            "isWeekend",
+            "isNight",
+            "dayOfTheWeek",
+            "hour",
+        ] + [
+            "connCount",
+            "uniqueDstIps",
+            "uniqueSrcPorts",
+            "uniqueDstPorts",
+            "commonDstPort",
+            "avgPacketSize",
+            "stdPacketSize",
+            "totalBytes",
+            "synCount",
+            "mainProtocol",
+            "avgTtl",
+            "stdTtl",
+        ]
+
+        agg_features["synRatio"] = agg_features["synCount"] / agg_features["connCount"]
+        agg_features["dstIpEntropy"] = (
+            agg_features["uniqueDstIps"] / agg_features["connCount"]
+        )
+        agg_features["portEntropy"] = (
+            agg_features["uniqueDstPorts"] / agg_features["connCount"]
+        )
+        agg_features["bytesPerConn"] = (
+            agg_features["totalBytes"] / agg_features["connCount"]
+        )
+
+        agg_features = agg_features.fillna(0)
+
+        self.df = agg_features
+
+    def scale(self):
+        '''The function `scale` performs cyclical encoding on time-related columns and scales the remaining
+        columns using a scaler.
+        
+        '''
+        
+        writeToLogPy(info, "Starting scaling data")
+        # encode timeStamp
+        # Cyclical encoding
+
+        self.df["hourSin"] = np.sin(2 * np.pi * self.df["hour"] / 24)
+        self.df["hourCos"] = np.cos(2 * np.pi * self.df["hour"] / 24)
+        self.df["dowSin"] = np.sin(2 * np.pi * self.df["dayOfTheWeek"] / 7)
+        self.df["dowCos"] = np.cos(2 * np.pi * self.df["dayOfTheWeek"] / 7)
+
+        for column, val in self.df.items():
+            if column not in [
+                "hour",
+                "timeWindow",
+                "dayOfTheWeek",
+                "isWeekend",
+                "isNight",
+            ]:
+                self.df[column] = self.scaler.fit_transform(self.df[[column]])
 
     def extractDate(self, date):
         """This function extracts the date from a given input.
@@ -105,3 +225,29 @@ class GetFeatures:
         )
 
         return flooredDt
+
+    def printHead(self):
+        print(self.df.head())
+
+    def extractedColumns(self):
+        '''The function `extractedColumns` creates a new DataFrame with selected columns from the original
+        DataFrame.
+        
+        Returns
+        -------
+            A new DataFrame `newDf` containing only the columns specified in the `choseColumns` list that
+        exist in the original DataFrame `self.df` is being returned. If a column from `choseColumns` does
+        not exist in `self.df`, a warning message is logged and that column is not included in the new
+        DataFrame.
+        
+        '''
+        newDf = pd.DataFrame()
+
+        for columnName in choseColumns:
+            if columnName in self.df.columns:
+                writeToLogPy(info, f"Writing {columnName} to newDf")
+                newDf[columnName] = self.df[columnName]
+            else:
+                writeToLogPy(warn, f"Could not find {columnName} in df")
+
+        return newDf

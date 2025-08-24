@@ -3,7 +3,7 @@ from .dataBaseManager.functions import savePacket
 from .dataBaseManager.database import initDb, SessionLocal, closeDb
 from .logger.logger import *
 from .threatDetection.synDetection.synFloodDetection import SynFloodDetection
-from .threatDetection.featuresEngineering.featuresEngineering import GetFeatures
+from .threatDetection.machineLearning.isolatedForest import IsolationForestAnalysis
 
 writeToLogPy(info, "Starting Python")
 
@@ -26,8 +26,9 @@ synFloodDetection = SynFloodDetection(session)
 synFloodDetection.startSynFloodDetection()
 
 
-features = GetFeatures(session)
-features.run()
+isoForest = IsolationForestAnalysis(session)
+isoForest.run()
+
 
 
 packetCapturePy.stop()  # signal the capturer to stop
